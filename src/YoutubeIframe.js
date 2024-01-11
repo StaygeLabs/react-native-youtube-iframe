@@ -1,6 +1,5 @@
 import React, {
   useRef,
-  useMemo,
   useState,
   useEffect,
   forwardRef,
@@ -36,7 +35,6 @@ const YoutubeIframe = (props, ref) => {
     viewContainerStyle,
     webViewStyle,
     webViewProps,
-    useLocalHTML,
     baseUrlOverride,
     playbackRate = 1,
     contentScale = 1.0,
@@ -50,6 +48,9 @@ const YoutubeIframe = (props, ref) => {
     onFullScreenChange = _status => {},
     onPlaybackQualityChange = _quality => {},
     onPlaybackRateChange = _playbackRate => {},
+    gtmId,
+    ga4MeasurementId,
+    gtmDebugMode,
   } = props;
 
   const [playerReady, setPlayerReady] = useState(false);
@@ -235,29 +236,6 @@ const YoutubeIframe = (props, ref) => {
     [baseUrlOverride],
   );
 
-  const source = useMemo(() => {
-    const ytScript = MAIN_SCRIPT(
-      lastVideoIdRef.current,
-      lastPlayListRef.current,
-      initialPlayerParamsRef.current,
-      allowWebViewZoom,
-      contentScale,
-    );
-
-    if (useLocalHTML) {
-      const res = {html: ytScript.htmlString};
-      if (baseUrlOverride) {
-        res.baseUrl = baseUrlOverride;
-      }
-      return res;
-    }
-
-    const base = baseUrlOverride || DEFAULT_BASE_URL;
-    const data = ytScript.urlEncodedJSON;
-
-    return {uri: base + '?data=' + data};
-  }, [useLocalHTML, contentScale, baseUrlOverride, allowWebViewZoom]);
-
   return (
     <View style={[{height, width}, viewContainerStyle]}>
       <WebView
@@ -282,7 +260,18 @@ const YoutubeIframe = (props, ref) => {
         // --
 
         // add props that should not be allowed to be overridden below
-        source={source}
+        source={{
+          html: MAIN_SCRIPT(
+            lastVideoIdRef.current,
+            lastPlayListRef.current,
+            initialPlayerParamsRef.current,
+            allowWebViewZoom,
+            contentScale,
+            gtmId,
+            ga4MeasurementId,
+            gtmDebugMode,
+          ),
+        }}
         ref={webViewRef}
         onMessage={onWebMessage}
       />
