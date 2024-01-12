@@ -83,6 +83,9 @@ export const MAIN_SCRIPT = (
   initialPlayerParams,
   allowWebViewZoom,
   contentScale,
+  gtmId,
+  ga4MeasurementId,
+  gtmDebugMode,
 ) => {
   const {
     end,
@@ -112,7 +115,6 @@ export const MAIN_SCRIPT = (
 
   const list = typeof playList === 'string' ? playList : undefined;
   const listType = typeof playList === 'string' ? 'playlist' : undefined;
-  const playlist = Array.isArray(playList) ? playList.join(',') : undefined;
 
   // scale will either be "initial-scale=1.0"
   let scale = `initial-scale=${contentScale_s}`;
@@ -121,34 +123,31 @@ export const MAIN_SCRIPT = (
     scale += `, maximum-scale=${contentScale_s}`;
   }
 
-  const safeData = {
-    end,
-    list,
-    start,
-    color,
-    rel_s,
-    loop_s,
-    listType,
-    playlist,
-    videoId_s,
-    controls_s,
-    playerLang,
-    iv_load_policy,
-    contentScale_s,
-    cc_lang_pref_s,
-    allowWebViewZoom,
-    modestbranding_s,
-    preventFullScreen_s,
-    showClosedCaptions_s,
-  };
-
-  const urlEncodedJSON = encodeURI(JSON.stringify(safeData));
-
   const listParam = list ? `list: '${list}',` : '';
   const listTypeParam = listType ? `listType: '${list}',` : '';
   const playlistParam = playList ? `playlist: '${playList}',` : '';
 
-  const htmlString = `
+  const gtmScript = gtmId
+    ? `
+  <script
+    type="text/javascript"
+    async=""
+    src="https://www.googletagmanager.com/gtm.js?id=${gtmId}"
+  ></script>
+  `
+    : '';
+
+  const ga4Script = ga4MeasurementId
+    ? `
+    <script
+      type="text/javascript"
+      async=""
+      src="https://www.googletagmanager.com/gtag/js?id=${ga4MeasurementId}&l=dataLayer&cx=c"
+    ></script>
+  `
+    : '';
+
+  return `
 <!DOCTYPE html>
 <html>
   <head>
@@ -174,6 +173,8 @@ export const MAIN_SCRIPT = (
           height: 100%;
       }
     </style>
+   ${gtmScript}
+   ${ga4Script}
   </head>
   <body>
     <div class="container">
@@ -181,6 +182,7 @@ export const MAIN_SCRIPT = (
     </div>
 
     <script>
+      window.youtubeIframeDebug = ${!!gtmDebugMode};
       var tag = document.createElement('script');
 
       tag.src = "https://www.youtube.com/iframe_api";
@@ -257,6 +259,4 @@ export const MAIN_SCRIPT = (
   </body>
 </html>
 `;
-
-  return {htmlString, urlEncodedJSON};
 };

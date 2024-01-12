@@ -40,7 +40,7 @@ export interface InitialPlayerParams {
   preventFullScreen?: boolean;
   playerLang?: String;
   iv_load_policy?: Number;
-  /** 
+  /**
    * @deprecated - This parameter has no effect since August 15, 2023
    * https://developers.google.com/youtube/player_parameters#modestbranding
    */
@@ -163,6 +163,19 @@ export interface YoutubeIframeProps {
    * * for code check "iframe.html" in package repo
    */
   baseUrlOverride?: string;
+  /**
+   * google tag manager ID
+   */
+  gtmId?: string;
+  /**
+   * google analytics measurement ID
+   */
+  ga4MeasurementId?: string;
+  /**
+   * enable debug mode for google tag manager.
+   * only can use with development version of google tag manager ID
+   */
+  gtmDebugMode?: boolean;
 }
 
 export interface YoutubeMeta {
