@@ -144,6 +144,15 @@ export const MAIN_SCRIPT = (
       async=""
       src="https://www.googletagmanager.com/gtag/js?id=${ga4MeasurementId}&l=dataLayer&cx=c"
     ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag('js', new Date());
+
+      gtag('config', '${ga4MeasurementId}');
+    </script>
   `
     : '';
 
