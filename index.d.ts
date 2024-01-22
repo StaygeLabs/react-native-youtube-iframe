@@ -29,6 +29,15 @@ export interface YoutubeIframeRef {
   seekTo: (seconds: number, allowSeekAhead: boolean) => void;
 }
 
+export type YoutubeGtmFireData = {
+  videoTitle: string;
+  videoDuration: number;
+  videoPercent: number;
+  videoCurrentTime: number;
+  videoStatus: string;
+  videoProvider: string;
+};
+
 export interface InitialPlayerParams {
   loop?: boolean;
   controls?: boolean;
@@ -168,14 +177,11 @@ export interface YoutubeIframeProps {
    */
   gtmId?: string;
   /**
-   * google analytics measurement ID
-   */
-  ga4MeasurementId?: string;
-  /**
    * enable debug mode for google tag manager.
    * only can use with development version of google tag manager ID
    */
   gtmDebugMode?: boolean;
+  onMessage: (data: YoutubeGtmFireData) => void;
 }
 
 export interface YoutubeMeta {

@@ -49,8 +49,8 @@ const YoutubeIframe = (props, ref) => {
     onPlaybackQualityChange = _quality => {},
     onPlaybackRateChange = _playbackRate => {},
     gtmId,
-    ga4MeasurementId,
     gtmDebugMode,
+    onMessage,
   } = props;
 
   const [playerReady, setPlayerReady] = useState(false);
@@ -191,6 +191,9 @@ const YoutubeIframe = (props, ref) => {
           case 'playbackRateChange':
             onPlaybackRateChange(message.data);
             break;
+          case 'playerGtmFired':
+            onMessage(message.data);
+            break;
           default:
             eventEmitter.current.emit(message.eventType, message.data);
             break;
@@ -206,6 +209,7 @@ const YoutubeIframe = (props, ref) => {
       onFullScreenChange,
       onPlaybackRateChange,
       onPlaybackQualityChange,
+      onMessage,
     ],
   );
 
@@ -268,7 +272,6 @@ const YoutubeIframe = (props, ref) => {
             allowWebViewZoom,
             contentScale,
             gtmId,
-            ga4MeasurementId,
             gtmDebugMode,
           ),
         }}

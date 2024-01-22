@@ -84,7 +84,6 @@ export const MAIN_SCRIPT = (
   allowWebViewZoom,
   contentScale,
   gtmId,
-  ga4MeasurementId,
   gtmDebugMode,
 ) => {
   const {
@@ -137,25 +136,6 @@ export const MAIN_SCRIPT = (
   `
     : '';
 
-  const ga4Script = ga4MeasurementId
-    ? `
-    <script
-      type="text/javascript"
-      async=""
-      src="https://www.googletagmanager.com/gtag/js?id=${ga4MeasurementId}&l=dataLayer&cx=c"
-    ></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag() {
-        dataLayer.push(arguments);
-      }
-      gtag('js', new Date());
-
-      gtag('config', '${ga4MeasurementId}');
-    </script>
-  `
-    : '';
-
   return `
 <!DOCTYPE html>
 <html>
@@ -183,13 +163,16 @@ export const MAIN_SCRIPT = (
       }
     </style>
    ${gtmScript}
-   ${ga4Script}
   </head>
   <body>
     <div class="container">
       <div class="video" id="player" />
     </div>
-
+    <script>
+      window.rn_callback = function(data) {
+        window.ReactNativeWebView.postMessage(JSON.stringify({eventType: 'playerGtmFired', data: data}))
+      };
+    </script>
     <script>
       window.youtubeIframeDebug = ${!!gtmDebugMode};
       var tag = document.createElement('script');
